@@ -1,0 +1,12 @@
+  GNU nano 4.8                   vigenere_cipher.py                             
+def generate_key(text, key) #it will generate the same sequence of key over and>
+        key = list(key)
+        if len(text) == len(key):
+                return key
+        else:
+                for i in range(len(text) - len(key)):
+                        key.append(key[i % len(key) ])
+        return "".join(key)
+def encrypt(
+
+
