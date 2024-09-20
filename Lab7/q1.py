@@ -1,14 +1,18 @@
-from Crypto.Util import number
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
 import random
 
 def generate_keypair(bits=512):
     """Generates a public/private key pair for Paillier encryption"""
-    p = number.getPrime(bits)
-    q = number.getPrime(bits)
+    p = rsa.generate_private_key(public_exponent=65537, key_size=bits, backend=default_backend()).private_numbers().p
+    q = rsa.generate_private_key(public_exponent=65537, key_size=bits, backend=default_backend()).private_numbers().q
     n = p * q
     g = n + 1  # g = n + 1 is often used in practical implementations
-    lambda_n = (p - 1) * (q - 1)  # λ(n) = (p - 1)(q - 1)
-    mu = number.inverse(lambda_n, n)  # Modular inverse of λ(n) modulo n
+    lambda_n = (p - 1) * (q - 1) // ((p - 1) * (q - 1))  # λ(n)
+    mu = pow(lambda_n, -1, n)  # Modular inverse of λ(n) modulo n
     return (n, g), (lambda_n, mu)
 
 def encrypt(public_key, message):
@@ -49,3 +53,6 @@ def main():
     print(f"Ciphertext of a + b: {ciphertext_sum}")
     print(f"Decrypted sum: {decrypted_sum}")
     print(f"Expected sum: {a + b}")
+
+if __name__ == "__main__":
+    main()
